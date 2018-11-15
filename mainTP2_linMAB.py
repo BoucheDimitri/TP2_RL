@@ -20,7 +20,7 @@ model = ColdStartMovieLensModel(
 )
 
 # Number of movies
-T = 207
+T = 1000
 
 # Regularization
 lamb = 0.01
