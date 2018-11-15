@@ -8,16 +8,16 @@ import functionsTP2_linMAB as funcs_linmab
 importlib.reload(funcs_linmab)
 
 random_state = np.random.randint(0, 375551485)
-model = ToyLinearModel(
-    n_features=8,
-    n_actions=5,
-    random_state=random_state,
-    noise=0.1)
-
-# model = ColdStartMovieLensModel(
+# model = ToyLinearModel(
+#     n_features=8,
+#     n_actions=5,
 #     random_state=random_state,
-#     noise=0.1
-# )
+#     noise=0.1)
+
+model = ColdStartMovieLensModel(
+    random_state=random_state,
+    noise=0.1
+)
 
 # Number of movies
 T = 207
@@ -54,3 +54,4 @@ axes[1].plot(norms_ucb, label="UCB")
 axes[1].plot(norms_greedy, label="Greedy")
 axes[1].set_xlabel("t")
 axes[1].set_ylabel("Distance l2 to true preference vector")
+axes[1].legend()

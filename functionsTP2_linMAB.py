@@ -85,10 +85,12 @@ def mc_rewards_expectation(rewards_tensor):
 def mc_regret_norm_UCB1(ntrajs, model, T, lamb, alphas, eps=0):
     rewards_tensor, norms_matrix = collect_UCB_trajs(ntrajs, model, T, lamb, alphas, eps)
     mc_expec = mc_rewards_expectation(rewards_tensor)
-    return model.best_arm_reward() - mc_expec, np.mean(norms_matrix, axis=1)
+    best = model.best_arm_reward() * np.arange(1, T + 1)
+    return best - mc_expec, np.mean(norms_matrix, axis=1)
 
 
 def mc_regret_random(ntrajs, model, T):
     rewards_tensor = collect_random_trajs(ntrajs, model, T)
     mc_expec = mc_rewards_expectation(rewards_tensor)
-    return model.best_arm_reward() - mc_expec
+    best = model.best_arm_reward() * np.arange(1, T + 1)
+    return best - mc_expec
