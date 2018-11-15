@@ -2,64 +2,35 @@ import numpy as np
 from linearmab_models import ToyLinearModel, ColdStartMovieLensModel
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import importlib
 
-random_state = np.random.randint(0, 24532523)
-model = ToyLinearModel(
-    n_features=8,
-    n_actions=20,
-    random_state=random_state,
-    noise=0.1)
+import functionsTP2_linMAB as funcs_linmab
+importlib.reload(funcs_linmab)
 
-# model = ColdStartMovieLensModel(
+random_state = np.random.randint(0, 375551485)
+# model = ToyLinearModel(
+#     n_features=8,
+#     n_actions=5,
 #     random_state=random_state,
-#     noise=0.1
-# )
+#     noise=0.1)
 
-n_a = model.n_actions
-d = model.n_features
+model = ColdStartMovieLensModel(
+    random_state=random_state,
+    noise=0.1
+)
 
-T = 6000
+T = 200
 
+lamb = 0.01
+alphas = np.ones((T, ))
 
-nb_simu = 50 # you may want to change this!
+actions, rewards, thetas = funcs_linmab.lin_UCB(model, T, lamb, alphas, eps=0)
 
-##################################################################
-# define the algorithms
-# - Random
-# - Linear UCB
-# - Eps Greedy
-# and test it!
-##################################################################
+ntrajs = 50
 
-regret = np.zeros((nb_simu, T))
-norm_dist = np.zeros((nb_simu, T))
+regret_ucb, norms_ucb = funcs_linmab.mc_regret_norm_UCB1(ntrajs, model, T, lamb, alphas, eps=0)
 
-for k in tqdm(range(nb_simu), desc="Simulating {}".format(alg_name)):
+eps = 0.1
+regret_greedy, norms_greedy = funcs_linmab.mc_regret_norm_UCB1(ntrajs, model, T, lamb, alphas, eps=eps)
 
-    for t in range(T):
-        a_t = ...  # algorithm picks the action
-        r_t = model.reward(a_t) # get the reward
-
-        # do something (update algorithm)
-
-        # store regret
-        regret[k, t] = model.best_arm_reward() - r_t
-        norm_dist[k, t] = np.linalg.norm(theta_hat - model.real_theta, 2)
-
-# compute average (over sim) of the algorithm performance and plot it
-mean_norms = ...
-mean_regret = ...
-
-plt.figure(1)
-plt.subplot(121)
-plt.plot(mean_norms, label=alg_name)
-plt.ylabel('d(theta, theta_hat)')
-plt.xlabel('Rounds')
-plt.legend()
-
-plt.subplot(122)
-plt.plot(mean_regret.cumsum(), label=alg_name)
-plt.ylabel('Cumulative Regret')
-plt.xlabel('Rounds')
-plt.legend()
-plt.show()
+regret_random = funcs_linmab.mc_regret_random(ntrajs, model, T)

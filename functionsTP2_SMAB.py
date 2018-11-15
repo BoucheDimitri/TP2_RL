@@ -85,7 +85,7 @@ def collect_trajs_TS(T, MAB, ntrajs):
 
 
 def mc_rewards_expectation(rewards_tensor):
-    return np.mean(np.cumsum(np.sum(rewards_tensor, axis=1), axis=0), axis=1)
+    return np.mean(np.sum(np.cumsum(rewards_tensor, axis=0), axis=1), axis=1)
 
 
 def mc_regret_UCB1(T, MAB, rhoseq, ntrajs):
@@ -137,7 +137,6 @@ def TS_nonbinary(T, MAB):
         bernoulli_trials[0, 0] = rewards[0, 0]
     else:
         bernoulli_trials[0, 0] = np.random.binomial(2, rewards[0, 0], 1)
-    print(bernoulli_trials[0, 0])
     for t in range(1, T):
         N, S = get_N_S(bernoulli_trials, actions, t)
         pi = draw_betas(N, S)
@@ -147,7 +146,7 @@ def TS_nonbinary(T, MAB):
         if int(rewards[t, a]) == 1 or int(rewards[t, a]) == 0:
             bernoulli_trials[t, a] = rewards[t, a]
         else:
-            bernoulli_trials[t, a] = np.random.binomial(2, rewards[t, a], 1)
+            bernoulli_trials[t, a] = np.random.binomial(2, np.mean(rewards[t, a]), 1)
     return actions, rewards, bernoulli_trials
 
 
